@@ -1,4 +1,6 @@
-Fixtures::JSON = Pegmatite::DSL.define do
+require "json"
+
+Fixtures::JSONGrammar = Pegmatite::DSL.define do
   # Forward-declare `array` and `object` to refer to them before defining them.
   array  = declare
   object = declare
@@ -48,4 +50,59 @@ Fixtures::JSON = Pegmatite::DSL.define do
   
   # A JSON document is an array or object with optional surrounding whitespace.
   (s >> (array | object) >> s).then_eof
+end
+
+module Fixtures::JSONBuilder
+  def self.build(tokens : Array(Pegmatite::Token), source : String)
+    iter = Pegmatite::TokenIterator.new(tokens)
+    main = iter.next
+    build_value(main, iter, source)
+  end
+  
+  private def self.build_value(main, iter, source)
+    kind, start, finish = main
+    
+    # Build the value from the given main token and possibly further recursion.
+    value =
+      case kind
+      when :null then JSON::Any.new(nil)
+      when :true then JSON::Any.new(true)
+      when :false then JSON::Any.new(false)
+      when :string then JSON::Any.new(source[start...finish])
+      when :number then JSON::Any.new(source[start...finish].to_i64)
+      when :array then build_array(main, iter, source)
+      when :object then build_object(main, iter, source)
+      else raise NotImplementedError.new(kind)
+      end
+    
+    # Assert that we have consumed all child tokens.
+    iter.assert_next_not_child_of(main)
+    
+    value
+  end
+  
+  private def self.build_array(main, iter, source)
+    array = [] of JSON::Any
+    
+    # Gather children as values into the array.
+    iter.while_next_is_child_of(main) do |child|
+      array << build_value(child, iter, source)
+    end
+    
+    JSON::Any.new(array)
+  end
+  
+  private def self.build_object(main, iter, source)
+    object = {} of String => JSON::Any
+    
+    # Gather children as pairs of key/values into the array.
+    iter.while_next_is_child_of(main) do |pair|
+      key = build_value(iter.next_as_child_of(pair), iter, source).as_s
+      val = build_value(iter.next_as_child_of(pair), iter, source)
+      iter.assert_next_not_child_of(pair)
+      object[key] = val
+    end
+    
+    JSON::Any.new(object)
+  end
 end

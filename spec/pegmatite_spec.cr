@@ -1,5 +1,4 @@
 require "./spec_helper"
-require "json"
 
 describe Pegmatite do
   it "tokenizes basic JSON and builds a tree of JSON nodes" do
@@ -17,7 +16,7 @@ describe Pegmatite do
     }
     JSON
     
-    tokens = Pegmatite.tokenize(Fixtures::JSON, source)
+    tokens = Pegmatite.tokenize(Fixtures::JSONGrammar, source)
     tokens.should eq [
       {:object, 0, 182},
         {:pair, 4, 20},
@@ -49,29 +48,7 @@ describe Pegmatite do
           {:array, 174, 176}, # []
     ]
     
-    builder = ->(token : Pegmatite::Token, children : Array(JSON::Any)) do
-      kind, start, finish = token
-      case kind
-      when :null then JSON::Any.new(nil)
-      when :true then JSON::Any.new(true)
-      when :false then JSON::Any.new(false)
-      when :string then JSON::Any.new(source[start...finish])
-      when :number then JSON::Any.new(source[start...finish].to_i64)
-      when :array then JSON::Any.new(children)
-      when :pair then JSON::Any.new(children)
-      when :object then
-        object = {} of String => JSON::Any
-        children.each do |pair|
-          key, value = pair.as_a
-          object[key.as_s] = value
-        end
-        JSON::Any.new(object)
-      else raise NotImplementedError.new(kind.inspect)
-      end
-    end
-    
-    result = Pegmatite.build_tree(tokens, builder)
-    
+    result = Fixtures::JSONBuilder.build(tokens, source)
     result.should eq JSON::Any.new({
       "hello" => JSON::Any.new("world"),
       "from" => JSON::Any.new({
