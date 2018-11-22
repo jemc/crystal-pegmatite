@@ -65,4 +65,22 @@ describe Pegmatite do
       } of String => JSON::Any)
     } of String => JSON::Any)
   end
+  
+  it "raises useful parse errors" do
+    source = <<-JSON
+    {
+      "hello": !
+    }
+    JSON
+    
+    expected = <<-ERROR
+    unexpected token at byte offset 13:
+      "hello": !
+               ^
+    ERROR
+    
+    expect_raises Pegmatite::Pattern::MatchError, expected do
+      Pegmatite.tokenize(Fixtures::JSONGrammar, source)
+    end
+  end
 end

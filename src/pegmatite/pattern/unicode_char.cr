@@ -13,7 +13,7 @@ module Pegmatite
       @expected.chr.inspect
     end
     
-    def match(source, offset, tokenize) : MatchResult
+    def match(source, offset, state) : MatchResult
       c, length = Pattern::UnicodeAny.utf32_at(source, offset)
       
       # Fail if the character wasn't the expected value.

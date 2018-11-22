@@ -13,12 +13,15 @@ module Pegmatite
       "#{@child.description} followed by end-of-file"
     end
     
-    def match(source, offset, tokenize) : MatchResult
-      length, result = @child.match(source, offset, tokenize)
+    def match(source, offset, state) : MatchResult
+      length, result = @child.match(source, offset, state)
       return {length, result} if !result.is_a?(MatchOK)
       
       # Fail if the end of the source hasn't been reached yet.
-      return {0, self} if (offset + length) != source.bytesize
+      if (offset + length) != source.bytesize
+        state.observe_fail(offset + length + 1, @child)
+        return {0, self}
+      end
       
       {length, result}
     end

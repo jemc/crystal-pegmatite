@@ -22,8 +22,8 @@ module Pegmatite
       @child.as(Pattern).description
     end
     
-    def match(source, offset, tokenize) : MatchResult
-      @child.as(Pattern).match(source, offset, tokenize)
+    def match(source, offset, state) : MatchResult
+      @child.as(Pattern).match(source, offset, state)
     end
   end
 end

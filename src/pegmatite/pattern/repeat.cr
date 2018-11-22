@@ -15,20 +15,21 @@ module Pegmatite
       "#{@min} or more occurrences of #{@child.description}"
     end
     
-    def match(source, offset, tokenize) : MatchResult
+    def match(source, offset, state) : MatchResult
       total_length = 0
       tokens : Array(Token)? = nil
       
       # Keep trying to match the child pattern until we can't anymore.
       count = 0
       loop do
-        length, result = @child.match(source, offset + total_length, tokenize)
+        length, result = @child.match(source, offset + total_length, state)
         
         # If the child pattern failed to match, either return early with the
         # failure or end the loop successfully, depending on whether we've
         # already met the specified minimum number of occurrences.
         if !result.is_a?(MatchOK)
           if count < @min
+            state.observe_fail(offset + total_length + length, @child)
             return {total_length + length, result}
           else
             break
@@ -40,7 +41,7 @@ module Pegmatite
         
         # Capture the result if it is a token or array of tokens,
         # accounting for the case where the current tokens list is nil.
-        if tokenize
+        if state.tokenize
           case result
           when Token
             if tokens.is_a?(Array(Token))

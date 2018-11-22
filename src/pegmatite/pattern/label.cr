@@ -20,13 +20,13 @@ module Pegmatite
       @label.inspect
     end
     
-    def match(source, offset, tokenize) : MatchResult
-      length, result = @child.match(source, offset, tokenize)
+    def match(source, offset, state) : MatchResult
+      length, result = @child.match(source, offset, state)
       
       # If requested, this label will be added as a token to the token stream,
       # preceding any other tokens emitted by the child pattern.
       # This won't happen if the child pattern failed to parse.
-      if tokenize && @tokenize
+      if state.tokenize && @tokenize
         new_token = {@label, offset, offset + length}
         
         case result

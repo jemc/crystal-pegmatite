@@ -79,7 +79,7 @@ module Pegmatite
       "any character"
     end
     
-    def match(source, offset, tokenize) : MatchResult
+    def match(source, offset, state) : MatchResult
       c, length = Pattern::UnicodeAny.utf32_at(source, offset)
       
       # Fail if a valid UTF-32 character couldn't be parsed.

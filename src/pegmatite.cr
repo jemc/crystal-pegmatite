@@ -11,11 +11,12 @@ module Pegmatite
     source : String,
     offset = 0,
   ) : Array(Token)
-    length, result = pattern.match(source, offset, true)
+    state = Pattern::MatchState.new
+    length, result = pattern.match(source, offset, state)
     
     case result
     when Pattern
-      raise Pattern::MatchError.new(result, length)
+      raise Pattern::MatchError.new(source, state.highest_fail)
     when Token
       [result]
     when Array(Token)

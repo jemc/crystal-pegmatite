@@ -20,12 +20,12 @@ module Pegmatite
       end
     end
     
-    def match(source, offset, tokenize) : MatchResult
+    def match(source, offset, state) : MatchResult
       fail_length, fail_result = {0, self}
       
       # Try each child pattern in order, looking for the first successful match.
       @children.each do |child|
-        length, result = child.match(source, offset, tokenize)
+        length, result = child.match(source, offset, state)
         
         case result
         when MatchOK
@@ -37,6 +37,7 @@ module Pegmatite
         end
       end
       
+      state.observe_fail(offset + fail_length, fail_result)
       {fail_length, fail_result}
     end
   end

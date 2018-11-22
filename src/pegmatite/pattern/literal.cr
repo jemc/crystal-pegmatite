@@ -11,7 +11,7 @@ module Pegmatite
       @string.inspect
     end
     
-    def match(source, offset, tokenize) : MatchResult
+    def match(source, offset, state) : MatchResult
       if source.byte_slice(offset, @string.bytesize) == @string
         {@string.bytesize, nil}
       else

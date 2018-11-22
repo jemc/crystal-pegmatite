@@ -12,12 +12,13 @@ module Pegmatite
       "optional #{@child.description}"
     end
     
-    def match(source, offset, tokenize) : MatchResult
-      length, result = @child.match(source, offset, tokenize)
+    def match(source, offset, state) : MatchResult
+      length, result = @child.match(source, offset, state)
       
       if result.is_a?(MatchOK)
         {length, result}
       else
+        state.observe_fail(offset + length, @child)
         {0, nil}
       end
     end

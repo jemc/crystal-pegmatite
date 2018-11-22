@@ -20,21 +20,24 @@ module Pegmatite
       end
     end
     
-    def match(source, offset, tokenize) : MatchResult
+    def match(source, offset, state) : MatchResult
       total_length = 0
       tokens : Array(Token)? = nil
       
       # Match each child pattern, capturing tokens and increasing total_length.
       @children.each do |child|
-        length, result = child.match(source, offset + total_length, tokenize)
+        length, result = child.match(source, offset + total_length, state)
         total_length += length
         
         # Fail as soon as one child pattern fails.
-        return {total_length, result} if !result.is_a?(MatchOK)
+        if !result.is_a?(MatchOK)
+          state.observe_fail(offset + total_length, child)
+          return {total_length, result}
+        end
         
         # Capture the result if it is a token or array of tokens,
         # accounting for the case where the current tokens list is nil.
-        if tokenize
+        if state.tokenize
           case result
           when Token
             if tokens.is_a?(Array(Token))

@@ -14,8 +14,8 @@ module Pegmatite
       "excluding #{@child.description}"
     end
     
-    def match(source, offset, tokenize) : MatchResult
-      length, result = @child.match(source, offset, tokenize)
+    def match(source, offset, state) : MatchResult
+      length, result = @child.match(source, offset, state)
       case result
       when MatchOK
         {length, self}
