@@ -35,7 +35,10 @@ module Pegmatite
         when Token
           result = [new_token, result]
         when Array(Token)
-          result = [new_token].concat(result)
+          orig_result = result
+          result = Array(Token).new(orig_result.size + 1)
+          result.push(new_token)
+          result.concat(orig_result)
         end
       end
       
