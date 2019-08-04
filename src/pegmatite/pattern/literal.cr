@@ -5,6 +5,7 @@ module Pegmatite
   # Otherwise, the pattern succeeds, consuming the matched bytes.
   class Pattern::Literal < Pattern
     def initialize(@string : String)
+      @size = @string.bytesize.as(Int32)
     end
     
     def description
@@ -12,13 +13,16 @@ module Pegmatite
     end
     
     def match(source, offset, state) : MatchResult
-      if source.byte_slice(offset, @string.bytesize) == @string
-        {@string.bytesize, nil}
-      else
-        {0, self}
+      # We use some ugly patterns here for optimization - this is a hot path!
+      return {0, self} if source.bytesize < (offset + @string.bytesize)
+      i = 0
+      while i < @size
+        return {0, self} \
+          if @string.unsafe_byte_at(i) != source.unsafe_byte_at(offset + i)
+        i += 1
       end
-    rescue IndexError
-      {0, self}
+      
+      {@string.bytesize, nil}
     end
   end
 end
