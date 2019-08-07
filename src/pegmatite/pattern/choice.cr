@@ -10,6 +10,19 @@ module Pegmatite
     # Override this DSL operator to accrue into the existing choice.
     def |(other); Pattern::Choice.new(@children.dup.push(other)) end
     
+    def inspect(io)
+      io << "("
+      @children.each_with_index do |child, index|
+        io << " | " if index != 0
+        child.inspect(io)
+      end
+      io << ")"
+    end
+    
+    def dsl_name
+      "(|)"
+    end
+    
     def description
       case @children.size
       when 0 then "(empty choice!)"
@@ -20,7 +33,11 @@ module Pegmatite
       end
     end
     
-    def match(source, offset, state) : MatchResult
+    def _match(source, offset, state) : MatchResult
+      _match(source, offset, state)
+    end
+    
+    def _match(source, offset, state) : MatchResult
       fail_length, fail_result = {0, self}
       
       # Try each child pattern in order, looking for the first successful match.
