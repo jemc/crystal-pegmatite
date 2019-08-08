@@ -21,11 +21,13 @@ abstract class Pegmatite::Pattern
     property tokenize : Bool
     property trace : Bool
     property traces : Array(MatchTrace)
+    property memos
     getter highest_fail : {Int32, Pattern}
     
     def initialize(@tokenize = true, @trace = false)
       @highest_fail = {-1, UnicodeAny::INSTANCE}
       @traces = [] of MatchTrace
+      @memos = {} of {Pattern, Int32} => MatchResult
     end
     
     def observe_fail(offset, pattern)

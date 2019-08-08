@@ -33,11 +33,22 @@ module Pegmatite
       end
     end
     
-    def _match(source, offset, state) : MatchResult
-      _match(source, offset, state)
+    # Explicitly memoize Choice patterns, which happens to have a significant
+    # speedup on otherwise troublesome grammars with a lot of backtracking.
+    # We don't do this for other patterns.
+    def match(source, offset, state) : MatchResult
+      memo = state.memos[{self, offset}]?
+      return memo if memo
+      
+      result = _match(source, offset, state)
+      
+      state.memos[{self, offset}] = result
+      
+      result
     end
     
     def _match(source, offset, state) : MatchResult
+      
       fail_length, fail_result = {0, self}
       
       # Try each child pattern in order, looking for the first successful match.
