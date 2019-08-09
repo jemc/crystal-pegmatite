@@ -65,7 +65,7 @@ module Pegmatite
             if tokens.is_a?(Array(Token))
               tokens.concat result
             else
-              tokens = result
+              tokens = result.dup
             end
           end
         end

@@ -48,7 +48,6 @@ module Pegmatite
     end
     
     def _match(source, offset, state) : MatchResult
-      
       fail_length, fail_result = {0, self}
       
       # Try each child pattern in order, looking for the first successful match.
