@@ -24,10 +24,10 @@ module Pegmatite
         when {Pattern, Int32}
           io.puts "#{trace[1]} ?? #{trace[0].inspect}"
         when {Pattern, Int32, Pattern::MatchResult}
-          result = trace.as({Pattern, Int32, Pattern::MatchResult})[2]
-          case result[1]
+          trace_result = trace.as({Pattern, Int32, Pattern::MatchResult})[2]
+          case trace_result[1]
           when Pattern::MatchOK
-            io.puts "#{trace[1]} ~~~ #{trace[0].dsl_name} - #{result.inspect}"
+            io.puts "#{trace[1]} ~~~ #{trace[0].dsl_name} - #{trace_result.inspect}"
           else
             io.puts "#{trace[1]}     #{trace[0].dsl_name} - FAIL"
           end
