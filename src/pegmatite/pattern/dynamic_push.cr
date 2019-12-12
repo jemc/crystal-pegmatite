@@ -1,22 +1,22 @@
 module Pegmatite
-  # Pattern::Begin is used to dynamically create a start delimiter,
+  # Pattern::Begin is used to dynamically push a dynamic match onto the stack,
   # usually for the purposes of dynamically constraining the scope of a pattern.
   #
   # If the child pattern produces tokens, those tokens will be passed as-is.
   #
   # Returns the result of the child pattern's parsing.
-  class Pattern::Begin < Pattern
+  class Pattern::DynamicPush < Pattern
     def initialize(@child : Pattern, @label : Symbol)
     end
 
     def inspect(io)
-      io << "begin(\""
+      io << "dynamic_push(\""
       @label.inspect(io)
       io << "\")"
     end
 
     def dsl_name
-      "begin"
+      "dynamic_push"
     end
 
     def description
@@ -29,7 +29,7 @@ module Pegmatite
 
       val = source[offset...(offset+length)]
 
-      state.delimiters.push({@label, val})
+      state.dynamic_matches.push({@label, val})
 
       {length, result}
     end

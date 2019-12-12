@@ -1,21 +1,21 @@
 module Pegmatite
-  # Pattern::Delimiter is used to peek at a stored delimiter value and consume a
-  # specific string that matches the delimiter.
+  # Pattern::DynamicMatch is used to match against a stored dynamic match value
+  # and consume the string that matches the stored dynamic match.
   #
-  # Parsing will fail if the bytes in the stream don't exactly match the delimiter.
-  # Otherwise, the pattern succeeds, consuming the matched bytes.
-  class Pattern::Delimiter < Pattern
+  # Parsing will fail if the bytes in the stream don't exactly match the dynamic
+  # match. Otherwise, the pattern succeeds, consuming the matched bytes.
+  class Pattern::DynamicMatch < Pattern
     def initialize(@label : Symbol)
     end
 
     def inspect(io)
-      io << "delimiter(\""
+      io << "dynamic_match(\""
       @label.inspect(io)
       io << "\")"
     end
 
     def dsl_name
-      "delimiter"
+      "dynamic_match"
     end
 
     def description
@@ -23,7 +23,7 @@ module Pegmatite
     end
 
     def _match(source, offset, state) : MatchResult
-      last_delim = state.delimiters.select { |delim|
+      last_delim = state.dynamic_matches.select { |delim|
         delim[0] == @label
       }.last
 

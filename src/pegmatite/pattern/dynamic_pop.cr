@@ -1,21 +1,22 @@
 module Pegmatite
-  # Pattern::End is used to mark the end of a dynamic delimiter,
+  # Pattern::DynamicPop is used pop a dynamic match off the stack after matching,
+  # such as to mark the end of a dynamic delimiter.
   #
   # If the child pattern produces tokens, those tokens will be passed as-is.
   #
   # Returns the result of the child pattern's parsing.
-  class Pattern::End < Pattern
+  class Pattern::DynamicPop < Pattern
     def initialize(@child : Pattern, @label : Symbol)
     end
 
     def inspect(io)
-      io << "end(\""
+      io << "dynamic_pop(\""
       @label.inspect(io)
       io << "\")"
     end
 
     def dsl_name
-      "end"
+      "dynamic_pop"
     end
 
     def description
@@ -26,7 +27,7 @@ module Pegmatite
       length, result = @child.match(source, offset, state)
       return {length, result} if !result.is_a?(MatchOK)
 
-      last_delim = state.delimiters.last
+      last_delim = state.dynamic_matches.last
 
       val = source[offset...(offset+length)]
 
@@ -35,7 +36,7 @@ module Pegmatite
         return {length, result}
       end
 
-      state.delimiters.pop
+      state.dynamic_matches.pop
 
       {length, result}
     end

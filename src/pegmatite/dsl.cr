@@ -8,7 +8,7 @@ class Pegmatite::DSL
   end
 
   def declare; Pattern::Forward.new end
-  def delimiter(label); Pattern::Delimiter.new(label) end
+  def dynamic_match(label); Pattern::DynamicMatch.new(label) end
   def str(text); Pattern::Literal.new(text) end
   def any; Pattern::UnicodeAny::INSTANCE end
   def char(c)
@@ -30,8 +30,8 @@ class Pegmatite::DSL
     def repeat(min = 0); Pattern::Repeat.new(self, min) end
     def maybe; Pattern::Optional.new(self) end
     def then_eof; Pattern::EOF.new(self) end
-    def begin(label); Pattern::Begin.new(self, label) end
-    def end(label); Pattern::End.new(self, label) end
+    def dynamic_push(label); Pattern::DynamicPush.new(self, label) end
+    def dynamic_pop(label); Pattern::DynamicPop.new(self, label) end
     def named(label, tokenize = true)
       Pattern::Label.new(self, label, tokenize)
     end
