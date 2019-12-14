@@ -1,5 +1,3 @@
-require "json"
-
 Fixtures::HeredocGrammar = Pegmatite::DSL.define do
   # Define what optional whitespace looks like.
   s = (char(' ') | char('\t')).repeat
