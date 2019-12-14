@@ -1,5 +1,5 @@
 module Pegmatite
-  # Pattern::Begin is used to dynamically push a dynamic match onto the stack,
+  # Pattern::DynamicPush is used to dynamically push a dynamic match onto the stack,
   # usually for the purposes of dynamically constraining the scope of a pattern.
   #
   # If the child pattern produces tokens, those tokens will be passed as-is.

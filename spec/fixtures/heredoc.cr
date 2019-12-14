@@ -47,6 +47,5 @@ Fixtures::HeredocGrammar = Pegmatite::DSL.define do
   attribute =
     (identifier >> s >> char('=') >> s >> value >> s >> newline).named(:attribute)
 
-  # A JSON document is an array or object with optional surrounding whitespace.
   (snl >> attribute >> snl).repeat.then_eof
 end
