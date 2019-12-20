@@ -20,6 +20,18 @@ class Pegmatite::DSL
     max = max.ord if max.is_a?(Char)
     Pattern::UnicodeRange.new(min.to_u32, max.to_u32)
   end
+  def l(lit)
+    case lit
+    when Char
+      char(lit)
+    when String
+      str(lit)
+    when Range
+      range(lit.begin, lit.end)
+    else
+      raise "Invalid type `#{typeof(lit)}` for `l`. Must be Char, String, or Range."
+    end
+  end
 
   # These Methods are defined to be included in all Pattern instances,
   # for ease of combining and composing new Patterns.
