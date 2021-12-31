@@ -1,6 +1,6 @@
 # crystal-pegmatite
 
-[![Linux CI](https://github.com/kingsleyh/crystal-pegmatite/actions/workflows/ci.yml/badge.svg)](https://github.com/kingsleyh/crystal-pegmatite/actions/workflows/ci.yml)
+[![Linux CI](https://github.com/jemc/crystal-pegmatite/actions/workflows/ci.yml/badge.svg)](https://github.com/jemc/crystal-pegmatite/actions/workflows/ci.yml)
 
 A high-performance Parsing Expression Grammar (PEG) library for the Crystal language.
 
