@@ -6,7 +6,7 @@ class Pegmatite::DSL
   def self.define
     with new yield
   ensure
-    clear_class_variableq_state
+    clear_class_variables_state
   end
 
   def declare
@@ -60,7 +60,7 @@ class Pegmatite::DSL
     @@last_defined_whitespace_pattern.not_nil!
   end
 
-  def self.clear_class_variableq_state
+  def self.clear_class_variables_state
     @@last_defined_whitespace_pattern = nil
   end
 
