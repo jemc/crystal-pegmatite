@@ -7,7 +7,7 @@
 # TokenIterator is aware of this relationship and can be used to easily
 # traverse them, given a little discipline on the part of the caller.
 # In particular, the caller must commit to consuming tokens in a depth-first
-# traversal pattern in order for child relationships to be propery observed.
+# traversal pattern in order for child relationships to be properly observed.
 #
 # See spec/fixtures/json.cr for a real-world example of using TokenIterator.
 class Pegmatite::TokenIterator
