@@ -11,20 +11,21 @@ describe Pegmatite do
         "nifty": true,
         "overcomplicated": false,
         "worse-than": null,
-        "problems": []
+        "problems": [],
+        "utf8": ["Д", "Ⴃ", "𐀀"]
       }
     }
     JSON
 
     tokens = Pegmatite.tokenize(Fixtures::JSONGrammar, source)
     tokens.should eq [
-      {:object, 0, 182},
+      {:object, 0, 217},
       {:pair, 4, 20},
       {:string, 5, 10},  # "hello"
       {:string, 14, 19}, # "world"
-      {:pair, 24, 180},
+      {:pair, 24, 215},
       {:string, 25, 29}, # "from"
-      {:object, 32, 180},
+      {:object, 32, 215},
       {:pair, 38, 57},
       {:string, 39, 43}, # "name"
       {:string, 47, 56}, # "Pegmatite"
@@ -46,6 +47,12 @@ describe Pegmatite do
       {:pair, 162, 176},
       {:string, 163, 171}, # "problems"
       {:array, 174, 176},  # []
+      {:pair, 182, 211},
+      {:string, 183, 187}, # "utf8"
+      {:array, 190, 211},
+      {:string, 192, 194}, # (a string containing a 2-byte UTF-8 codepoint)
+      {:string, 198, 201}, # (a string containing a 3-byte UTF-8 codepoint)
+      {:string, 205, 209}, # (a string containing a 4-byte UTF-8 codepoint)
     ]
 
     result = Fixtures::JSONBuilder.build(tokens, source)
@@ -62,6 +69,9 @@ describe Pegmatite do
         "overcomplicated" => JSON::Any.new(false),
         "worse-than"      => JSON::Any.new(nil),
         "problems"        => JSON::Any.new([] of JSON::Any),
+        "utf8" => JSON::Any.new(
+          [JSON::Any.new("Д"), JSON::Any.new("Ⴃ"), JSON::Any.new("𐀀")]
+        )
       } of String => JSON::Any),
     } of String => JSON::Any)
   end
