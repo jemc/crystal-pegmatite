@@ -8,13 +8,18 @@ module Pegmatite
   # succeeded (not consuming any bytes from the final failing occurrence).
   # Like Pattern::Optional, this pattern will never fail if @min is zero.
   class Pattern::Repeat < Pattern
-    def initialize(@child : Pattern, @min = 0)
+    def initialize(@child : Pattern, @min = 0, max = nil)
+      @max = max || Int32::MAX
     end
 
     def inspect(io)
       @child.inspect(io)
       io << ".repeat("
       @min.inspect(io)
+      if max = @max
+        io << "-"
+        max.inspect(io)
+      end
       io << ")"
     end
 
@@ -23,7 +28,11 @@ module Pegmatite
     end
 
     def description
-      "#{@min} or more occurrences of #{@child.description}"
+      if max = @max
+        "#{@min} to #{@max} occurrences of #{@child.description}"
+      else
+        "#{@min} or more occurrences of #{@child.description}"
+      end
     end
 
     def _match(source, offset, state) : MatchResult
@@ -39,7 +48,7 @@ module Pegmatite
         # failure or end the loop successfully, depending on whether we've
         # already met the specified minimum number of occurrences.
         if !result.is_a?(MatchOK)
-          if count < @min
+          if count < @min || count > @max
             state.observe_fail(offset + total_length + length, @child)
             return {total_length + length, result}
           else
