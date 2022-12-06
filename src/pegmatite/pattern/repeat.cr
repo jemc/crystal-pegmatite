@@ -16,9 +16,9 @@ module Pegmatite
       @child.inspect(io)
       io << ".repeat("
       @min.inspect(io)
-      if max = @max
+      if @max < Int32::MAX
         io << "-"
-        max.inspect(io)
+        @max.inspect(io)
       end
       io << ")"
     end
@@ -28,7 +28,7 @@ module Pegmatite
     end
 
     def description
-      if max = @max
+      if @max < Int32::MAX
         "#{@min} to #{@max} occurrences of #{@child.description}"
       else
         "#{@min} or more occurrences of #{@child.description}"
