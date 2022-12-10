@@ -79,8 +79,12 @@ class Pegmatite::DSL
       Pattern::Not.new(self)
     end
 
-    def repeat(min = 0)
-      Pattern::Repeat.new(self, min)
+    def repeat(min = 0, max = nil)
+      Pattern::Repeat.new(self, min, max)
+    end
+
+    def repeat_exactly(times)
+      repeat(times, times)
     end
 
     def maybe
